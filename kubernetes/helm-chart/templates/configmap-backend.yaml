@@ -1,0 +1,57 @@
+{{- if .Values.backend.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "911-training.backend.labels" . | nindent 4 }}
+data:
+  # LLM Configuration
+  LLM_MODEL: {{ .Values.backend.config.llmModel | quote }}
+  LLM_BASE_URL: {{ .Values.backend.config.llmBaseUrl | quote }}
+  LLM_TEMPERATURE: {{ .Values.backend.config.llmTemperature | quote }}
+  LLM_MAX_TOKENS: {{ .Values.backend.config.llmMaxTokens | quote }}
+
+  # Service URLs
+  COQUI_TTS_URL: "http://coqui-tts-service:{{ .Values.coquiTts.service.port }}"
+  REDIS_URL: "redis://redis-service:{{ .Values.redis.service.port }}/0"
+  REDIS_HOST: "redis-service"
+  REDIS_PORT: {{ .Values.redis.service.port | quote }}
+  REDIS_DB: "0"
+
+  # Database Configuration
+  DB_HOST: "postgresql-service"
+  DB_PORT: {{ .Values.postgresql.service.port | quote }}
+  DB_NAME: {{ .Values.postgresql.config.database | quote }}
+
+  # S3/MinIO Configuration
+  S3_ENDPOINT: {{ .Values.s3.endpoint | quote }}
+  S3_BUCKET_NAME: {{ .Values.s3.bucketName | quote }}
+  S3_REGION: {{ .Values.s3.region | quote }}
+  S3_SECURE: {{ .Values.s3.secure | quote }}
+
+  # Application Configuration
+  BACKEND_HOST: {{ .Values.backend.config.backendHost | quote }}
+  BACKEND_PORT: {{ .Values.backend.config.backendPort | quote }}
+  BACKEND_WORKERS: {{ .Values.backend.config.backendWorkers | quote }}
+  LOG_LEVEL: {{ .Values.backend.config.logLevel | quote }}
+  ENVIRONMENT: {{ .Values.backend.config.environment | quote }}
+
+  # Audio Processing
+  AUDIO_CODEC: {{ .Values.backend.config.audioCodec | quote }}
+  AUDIO_SAMPLE_RATE: {{ .Values.backend.config.audioSampleRate | quote }}
+  AUDIO_CHANNELS: {{ .Values.backend.config.audioChannels | quote }}
+  AUDIO_BITRATE: {{ .Values.backend.config.audioBitrate | quote }}
+  AUDIO_FRAME_DURATION_MS: {{ .Values.backend.config.audioFrameDurationMs | quote }}
+
+  # TTS Configuration
+  TTS_MODEL: {{ .Values.coquiTts.config.model | quote }}
+  TTS_VOCODER: {{ .Values.coquiTts.config.vocoder | quote }}
+  TTS_SAMPLE_RATE: {{ .Values.coquiTts.config.sampleRate | quote }}
+
+  # Session Configuration
+  SESSION_TTL: {{ .Values.backend.config.sessionTtl | quote }}
+  MAX_CONCURRENT_CALLS: {{ .Values.backend.config.maxConcurrentCalls | quote }}
+  RATE_LIMIT_LLM_PER_MINUTE: {{ .Values.backend.config.rateLimitLlmPerMinute | quote }}
+{{- end }}

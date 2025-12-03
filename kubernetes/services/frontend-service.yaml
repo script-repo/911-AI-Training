@@ -1,0 +1,22 @@
+---
+# Frontend Service
+# Exposes the frontend deployment within the cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  namespace: 911-training
+  labels:
+    app: 911-training-simulator
+    component: frontend
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+    protocol: TCP
+  selector:
+    app: 911-training-simulator
+    component: frontend
+  sessionAffinity: None

@@ -1,0 +1,88 @@
+---
+# Frontend Deployment
+# Serves the React frontend via Nginx
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: 911-training
+  labels:
+    app: 911-training-simulator
+    component: frontend
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: 911-training-simulator
+      component: frontend
+  template:
+    metadata:
+      labels:
+        app: 911-training-simulator
+        component: frontend
+    spec:
+      containers:
+      - name: frontend
+        # Replace with your actual frontend image
+        # Build with: docker build -t your-registry/911-training-frontend:latest ./frontend
+        image: your-registry/911-training-frontend:latest
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        env:
+        # Environment variables from ConfigMap
+        - name: VITE_API_URL
+          valueFrom:
+            configMapKeyRef:
+              name: frontend-config
+              key: VITE_API_URL
+        - name: VITE_WS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: frontend-config
+              key: VITE_WS_URL
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 250m
+            memory: 256Mi
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+      # Use node affinity to spread pods across nodes for HA
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: component
+                  operator: In
+                  values:
+                  - frontend
+              topologyKey: kubernetes.io/hostname

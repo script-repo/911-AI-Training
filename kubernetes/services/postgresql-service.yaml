@@ -1,0 +1,23 @@
+---
+# PostgreSQL Service
+# Exposes PostgreSQL database within the cluster
+# This is a headless service for StatefulSet
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresql-service
+  namespace: 911-training
+  labels:
+    app: 911-training-simulator
+    component: database
+spec:
+  type: ClusterIP
+  ports:
+  - name: postgresql
+    port: 5432
+    targetPort: 5432
+    protocol: TCP
+  selector:
+    app: 911-training-simulator
+    component: database
+  clusterIP: None  # Headless service for StatefulSet

@@ -1,0 +1,76 @@
+{{- if .Values.coquiTts.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coqui-tts
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "911-training.coquiTts.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.coquiTts.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      {{- include "911-training.coquiTts.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "911-training.coquiTts.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: coqui-tts
+        image: "{{ .Values.coquiTts.image.repository }}:{{ .Values.coquiTts.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.coquiTts.service.port }}
+          protocol: TCP
+        command:
+        - tts-server
+        args:
+        - --model_name
+        - {{ .Values.coquiTts.config.model }}
+        - --vocoder_name
+        - {{ .Values.coquiTts.config.vocoder }}
+        - --port
+        - {{ .Values.coquiTts.service.port | quote }}
+        resources:
+          {{- toYaml .Values.coquiTts.resources | nindent 10 }}
+        volumeMounts:
+        - name: tts-models-cache
+          mountPath: /root/.local/share/tts
+        livenessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.coquiTts.service.port }}
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.coquiTts.service.port }}
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+      volumes:
+      - name: tts-models-cache
+        emptyDir:
+          sizeLimit: {{ .Values.coquiTts.storage.cacheSize }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

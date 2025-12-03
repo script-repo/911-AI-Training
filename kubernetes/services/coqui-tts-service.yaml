@@ -1,0 +1,22 @@
+---
+# Coqui TTS Service
+# Exposes the TTS service within the cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: coqui-tts-service
+  namespace: 911-training
+  labels:
+    app: 911-training-simulator
+    component: coqui-tts
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 5002
+    targetPort: 5002
+    protocol: TCP
+  selector:
+    app: 911-training-simulator
+    component: coqui-tts
+  sessionAffinity: None

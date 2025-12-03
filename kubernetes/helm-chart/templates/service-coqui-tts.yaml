@@ -1,0 +1,18 @@
+{{- if .Values.coquiTts.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: coqui-tts-service
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "911-training.coquiTts.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.coquiTts.service.type }}
+  ports:
+  - name: http
+    port: {{ .Values.coquiTts.service.port }}
+    targetPort: {{ .Values.coquiTts.service.port }}
+    protocol: TCP
+  selector:
+    {{- include "911-training.coquiTts.selectorLabels" . | nindent 4 }}
+{{- end }}

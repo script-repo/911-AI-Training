@@ -1,0 +1,10 @@
+---
+# Namespace for 911 Operator Training Simulator
+# This isolates all resources for the application
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: 911-training
+  labels:
+    app: 911-training-simulator
+    environment: production

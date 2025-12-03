@@ -1,0 +1,276 @@
+---
+# Backend Deployment
+# FastAPI application server
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: 911-training
+  labels:
+    app: 911-training-simulator
+    component: backend
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: 911-training-simulator
+      component: backend
+  template:
+    metadata:
+      labels:
+        app: 911-training-simulator
+        component: backend
+    spec:
+      containers:
+      - name: backend
+        # Replace with your actual backend image
+        # Build with: docker build -t your-registry/911-training-backend:latest ./backend
+        image: your-registry/911-training-backend:latest
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 8000
+          protocol: TCP
+        env:
+        # LLM Configuration
+        - name: OPENROUTER_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: openrouter-secret
+              key: OPENROUTER_API_KEY
+        - name: LLM_MODEL
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: LLM_MODEL
+        - name: LLM_BASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: LLM_BASE_URL
+        - name: LLM_TEMPERATURE
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: LLM_TEMPERATURE
+        - name: LLM_MAX_TOKENS
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: LLM_MAX_TOKENS
+
+        # Database Configuration
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: database-secret
+              key: DATABASE_URL
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: DB_HOST
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: DB_PORT
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: DB_NAME
+
+        # Redis Configuration
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: REDIS_URL
+        - name: REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: REDIS_HOST
+        - name: REDIS_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: REDIS_PORT
+        - name: REDIS_DB
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: REDIS_DB
+
+        # S3/MinIO Configuration
+        - name: S3_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: S3_ENDPOINT
+        - name: S3_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: s3-secret
+              key: S3_ACCESS_KEY
+        - name: S3_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: s3-secret
+              key: S3_SECRET_KEY
+        - name: S3_BUCKET_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: S3_BUCKET_NAME
+        - name: S3_REGION
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: S3_REGION
+        - name: S3_SECURE
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: S3_SECURE
+
+        # Coqui TTS Configuration
+        - name: COQUI_TTS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: COQUI_TTS_URL
+        - name: TTS_MODEL
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: TTS_MODEL
+        - name: TTS_VOCODER
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: TTS_VOCODER
+        - name: TTS_SAMPLE_RATE
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: TTS_SAMPLE_RATE
+
+        # Application Configuration
+        - name: BACKEND_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: BACKEND_HOST
+        - name: BACKEND_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: BACKEND_PORT
+        - name: BACKEND_WORKERS
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: BACKEND_WORKERS
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: LOG_LEVEL
+        - name: ENVIRONMENT
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: ENVIRONMENT
+
+        # Audio Processing
+        - name: AUDIO_CODEC
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: AUDIO_CODEC
+        - name: AUDIO_SAMPLE_RATE
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: AUDIO_SAMPLE_RATE
+        - name: AUDIO_CHANNELS
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: AUDIO_CHANNELS
+        - name: AUDIO_BITRATE
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: AUDIO_BITRATE
+        - name: AUDIO_FRAME_DURATION_MS
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: AUDIO_FRAME_DURATION_MS
+
+        # Session Configuration
+        - name: SESSION_TTL
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: SESSION_TTL
+        - name: MAX_CONCURRENT_CALLS
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: MAX_CONCURRENT_CALLS
+        - name: RATE_LIMIT_LLM_PER_MINUTE
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: RATE_LIMIT_LLM_PER_MINUTE
+
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+          limits:
+            cpu: 2000m
+            memory: 3Gi
+
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8000
+          initialDelaySeconds: 20
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+
+      # Use node affinity to spread pods across nodes for HA
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: component
+                  operator: In
+                  values:
+                  - backend
+              topologyKey: kubernetes.io/hostname

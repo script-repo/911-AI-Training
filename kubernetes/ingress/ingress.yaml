@@ -1,0 +1,108 @@
+---
+# Ingress Configuration
+# Routes external traffic to frontend and backend services
+# Supports WebSocket connections for real-time audio streaming
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: 911-training-ingress
+  namespace: 911-training
+  labels:
+    app: 911-training-simulator
+  annotations:
+    # Nginx Ingress Controller annotations
+    kubernetes.io/ingress.class: "nginx"
+
+    # Enable WebSocket support
+    nginx.ingress.kubernetes.io/websocket-services: "backend-service"
+
+    # Increase proxy timeouts for long-lived WebSocket connections
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+
+    # Enable sticky sessions for WebSocket connections
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/affinity-mode: "persistent"
+    nginx.ingress.kubernetes.io/session-cookie-name: "911-training-session"
+    nginx.ingress.kubernetes.io/session-cookie-max-age: "3600"
+
+    # Increase body size for audio uploads
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+
+    # Enable CORS (if needed for different domains)
+    # nginx.ingress.kubernetes.io/enable-cors: "true"
+    # nginx.ingress.kubernetes.io/cors-allow-origin: "https://your-domain.com"
+
+    # SSL/TLS configuration (uncomment when using cert-manager)
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+
+    # Rate limiting (optional)
+    # nginx.ingress.kubernetes.io/limit-rps: "100"
+    # nginx.ingress.kubernetes.io/limit-connections: "50"
+spec:
+  # TLS configuration (uncomment when using SSL certificates)
+  # tls:
+  # - hosts:
+  #   - your-domain.com
+  #   - www.your-domain.com
+  #   secretName: 911-training-tls-secret
+
+  rules:
+  # Replace 'your-domain.com' with your actual domain
+  # For on-prem testing, you can use an IP address or remove the host field
+  - host: your-domain.com
+    http:
+      paths:
+      # Backend API routes
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 8000
+
+      # WebSocket route for real-time audio
+      - path: /ws
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 8000
+
+      # Health check endpoints
+      - path: /health
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 8000
+
+      - path: /ready
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 8000
+
+      # Frontend (catch-all route, must be last)
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-service
+            port:
+              number: 80
+
+  # For on-prem without domain, use default backend
+  # defaultBackend:
+  #   service:
+  #     name: frontend-service
+  #     port:
+  #       number: 80

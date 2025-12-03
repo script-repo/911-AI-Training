@@ -1,0 +1,330 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║          911 OPERATOR TRAINING SIMULATOR - KUBERNETES DEPLOYMENT             ║
+║                         Complete Manifest Creation                           ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📦 TOTAL FILES CREATED: 47
+
+📁 DIRECTORY STRUCTURE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/home/user/911-AI-Training/kubernetes/
+│
+├── 📄 namespace.yaml                      # Namespace definition
+├── 📄 README.md (14KB)                    # Complete documentation
+├── 📄 DEPLOYMENT_GUIDE.md (16KB)          # Step-by-step guide
+├── 📄 KUBECTL_CHEATSHEET.md (12KB)        # Quick reference
+├── 📄 SUMMARY.md (15KB)                   # This summary
+├── 🔧 deploy.sh (executable)              # Automated deployment script
+│
+├── 📁 configmaps/ (2 files)
+│   ├── backend-config.yaml                # Backend environment variables
+│   └── frontend-config.yaml               # Frontend environment variables
+│
+├── 📁 secrets/ (5 files)
+│   ├── README.md                          # Secret creation guide
+│   ├── openrouter-secret.yaml.example     # OpenRouter API key template
+│   ├── database-secret.yaml.example       # Database credentials template
+│   ├── redis-secret.yaml.example          # Redis password template
+│   └── s3-secret.yaml.example             # S3/MinIO credentials template
+│
+├── 📁 deployments/ (4 files)
+│   ├── frontend-deployment.yaml           # React frontend (2 replicas)
+│   ├── backend-deployment.yaml            # FastAPI backend (3 replicas)
+│   ├── coqui-tts-deployment.yaml         # TTS service (2 replicas)
+│   └── redis-deployment.yaml              # Redis cache (1 replica)
+│
+├── 📁 statefulsets/ (1 file)
+│   └── postgresql-statefulset.yaml        # PostgreSQL with persistent storage
+│
+├── 📁 services/ (5 files)
+│   ├── frontend-service.yaml              # Frontend service (ClusterIP)
+│   ├── backend-service.yaml               # Backend service (ClusterIP + sticky)
+│   ├── coqui-tts-service.yaml            # TTS service (ClusterIP)
+│   ├── postgresql-service.yaml            # PostgreSQL service (Headless)
+│   └── redis-service.yaml                 # Redis service (ClusterIP)
+│
+├── 📁 ingress/ (1 file)
+│   └── ingress.yaml                       # Nginx Ingress with WebSocket support
+│
+├── 📁 pvcs/ (1 file)
+│   └── postgres-pvc.yaml                  # PostgreSQL storage (100GB)
+│
+├── 📁 hpa/ (1 file)
+│   └── backend-hpa.yaml                   # Backend autoscaling (3-10 replicas)
+│
+└── 📁 helm-chart/ (16 files)
+    ├── Chart.yaml                         # Helm chart metadata
+    ├── values.yaml                        # Default configuration
+    ├── README.md                          # Helm documentation
+    ├── .helmignore                        # Helm ignore file
+    └── templates/                         # Templated manifests
+        ├── NOTES.txt                      # Post-install notes
+        ├── _helpers.tpl                   # Template helpers
+        ├── namespace.yaml                 # Namespace template
+        ├── configmap-backend.yaml         # Backend ConfigMap template
+        ├── configmap-frontend.yaml        # Frontend ConfigMap template
+        ├── deployment-frontend.yaml       # Frontend deployment template
+        ├── deployment-backend.yaml        # Backend deployment template
+        ├── deployment-coqui-tts.yaml     # TTS deployment template
+        ├── deployment-redis.yaml          # Redis deployment template
+        ├── statefulset-postgresql.yaml    # PostgreSQL StatefulSet template
+        ├── service-frontend.yaml          # Frontend service template
+        ├── service-backend.yaml           # Backend service template
+        ├── service-coqui-tts.yaml        # TTS service template
+        ├── service-postgresql.yaml        # PostgreSQL service template
+        ├── service-redis.yaml             # Redis service template
+        ├── ingress.yaml                   # Ingress template
+        └── hpa-backend.yaml               # HPA template
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 DEPLOYMENT COMPONENTS:
+
+┌──────────────┬──────────┬───────────┬──────────┬──────────┬────────────────┐
+│ Component    │ Replicas │ CPU Req   │ CPU Lim  │ Mem Req  │ Mem Limit      │
+├──────────────┼──────────┼───────────┼──────────┼──────────┼────────────────┤
+│ Frontend     │ 2        │ 100m      │ 250m     │ 128Mi    │ 256Mi          │
+│ Backend      │ 3-10*    │ 500m      │ 2000m    │ 1Gi      │ 3Gi            │
+│ Coqui TTS    │ 2        │ 1000m     │ 2000m    │ 2Gi      │ 4Gi            │
+│ PostgreSQL   │ 1        │ 1000m     │ 4000m    │ 2Gi      │ 8Gi            │
+│ Redis        │ 1        │ 250m      │ 1000m    │ 512Mi    │ 2Gi            │
+└──────────────┴──────────┴───────────┴──────────┴──────────┴────────────────┘
+* With HorizontalPodAutoscaler (HPA)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✨ KEY FEATURES:
+
+  ✓ High Availability
+    - Multiple replicas for stateless services
+    - Pod anti-affinity rules
+    - Rolling updates with zero downtime
+    - Health checks on all services
+
+  ✓ Auto-Scaling
+    - HorizontalPodAutoscaler for backend
+    - CPU and memory-based scaling
+    - Min: 3, Max: 10 replicas
+    - Smart scale-up/down policies
+
+  ✓ Production Ready
+    - Resource requests and limits
+    - Persistent storage for PostgreSQL
+    - Proper service discovery
+    - WebSocket support
+    - SSL/TLS ready
+
+  ✓ Security
+    - Secrets for sensitive data
+    - Example files with placeholders
+    - Support for external secrets managers
+    - RBAC ready
+
+  ✓ Monitoring Ready
+    - Health check endpoints
+    - Readiness probes
+    - Liveness probes
+    - Labels for Prometheus
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📖 DOCUMENTATION PROVIDED:
+
+  1. README.md (14KB)
+     - Complete deployment documentation
+     - Both kubectl and Helm methods
+     - Scaling, monitoring, troubleshooting
+     - Production best practices
+
+  2. DEPLOYMENT_GUIDE.md (16KB)
+     - Prerequisites checklist
+     - Step-by-step deployment
+     - Post-deployment configuration
+     - Common issues and solutions
+
+  3. KUBECTL_CHEATSHEET.md (12KB)
+     - Quick reference for all operations
+     - Pod, deployment, service commands
+     - Database and Redis operations
+     - Troubleshooting commands
+
+  4. helm-chart/README.md
+     - Helm-specific documentation
+     - Configuration parameters
+     - Upgrade and rollback procedures
+     - Production considerations
+
+  5. secrets/README.md
+     - Secret creation methods
+     - Sealed Secrets guide
+     - External Secrets Operator
+     - Security best practices
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 QUICK START - THREE DEPLOYMENT METHODS:
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ METHOD 1: AUTOMATED SCRIPT (Quickest)                                       │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+  cd /home/user/911-AI-Training/kubernetes
+  ./deploy.sh
+
+  The script will:
+  ✓ Check prerequisites
+  ✓ Create namespace
+  ✓ Verify secrets exist
+  ✓ Deploy all components
+  ✓ Wait for readiness
+  ✓ Show deployment status
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ METHOD 2: MANUAL KUBECTL (Most Control)                                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+  # 1. Create namespace
+  kubectl apply -f namespace.yaml
+
+  # 2. Create secrets
+  kubectl create secret generic openrouter-secret \
+    --from-literal=OPENROUTER_API_KEY=your_key \
+    --namespace=911-training
+
+  kubectl create secret generic database-secret \
+    --from-literal=POSTGRES_PASSWORD=your_password \
+    --from-literal=DATABASE_URL=postgresql://... \
+    --namespace=911-training
+
+  kubectl create secret generic s3-secret \
+    --from-literal=S3_ACCESS_KEY=your_key \
+    --from-literal=S3_SECRET_KEY=your_secret \
+    --namespace=911-training
+
+  # 3. Deploy components
+  kubectl apply -f configmaps/
+  kubectl apply -f statefulsets/
+  kubectl apply -f deployments/
+  kubectl apply -f services/
+  kubectl apply -f ingress/
+  kubectl apply -f hpa/
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ METHOD 3: HELM CHART (Production Recommended)                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+  # 1. Create secrets (same as above)
+
+  # 2. Install Helm chart
+  helm install 911-training ./helm-chart \
+    --set frontend.image.repository=your-registry/frontend \
+    --set backend.image.repository=your-registry/backend \
+    --set ingress.hosts[0].host=your-domain.com
+
+  # Or with custom values file
+  helm install 911-training ./helm-chart -f custom-values.yaml
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚙️  BEFORE DEPLOYING - REQUIRED CONFIGURATION:
+
+  1. BUILD AND PUSH IMAGES:
+     - Build frontend and backend Docker images
+     - Push to your container registry
+     - Update image references in manifests
+
+  2. UPDATE IMAGE REFERENCES:
+     - deployments/frontend-deployment.yaml (line 32)
+     - deployments/backend-deployment.yaml (line 32)
+     - helm-chart/values.yaml
+
+  3. CONFIGURE DOMAIN:
+     - configmaps/frontend-config.yaml
+     - ingress/ingress.yaml (line 55)
+     - helm-chart/values.yaml
+
+  4. CREATE SECRETS:
+     - OpenRouter API key
+     - Database password
+     - S3/MinIO credentials
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 MINIMUM CLUSTER REQUIREMENTS:
+
+  ✓ Kubernetes: 1.19+
+  ✓ Nodes: 3 worker nodes (minimum)
+  ✓ CPU: 8 cores total
+  ✓ RAM: 16 GB total
+  ✓ Storage: 200 GB
+  ✓ Ingress Controller: Nginx (recommended)
+
+  RECOMMENDED FOR PRODUCTION:
+  ✓ Nodes: 5+ worker nodes
+  ✓ CPU: 16+ cores
+  ✓ RAM: 32+ GB
+  ✓ Storage: 500+ GB (SSD for database)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔍 VERIFICATION:
+
+After deployment, verify with:
+
+  # Check all pods are running
+  kubectl get pods -n 911-training
+
+  # Check services have endpoints
+  kubectl get endpoints -n 911-training
+
+  # Check ingress
+  kubectl get ingress -n 911-training
+
+  # Test backend health
+  curl http://your-domain.com/api/health
+
+  # View logs
+  kubectl logs -n 911-training -l component=backend -f
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🌐 ACCESSING THE APPLICATION:
+
+  Via Ingress (after configuration):
+    Frontend:  http://your-domain.com
+    Backend:   http://your-domain.com/api
+    API Docs:  http://your-domain.com/api/docs
+    WebSocket: ws://your-domain.com/ws
+
+  Via Port Forward (development):
+    kubectl port-forward -n 911-training svc/frontend-service 3000:80
+    kubectl port-forward -n 911-training svc/backend-service 8000:8000
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📚 ADDITIONAL DOCUMENTATION:
+
+  For detailed instructions, see:
+  - README.md                 → Complete documentation
+  - DEPLOYMENT_GUIDE.md       → Step-by-step guide
+  - KUBECTL_CHEATSHEET.md     → Quick reference
+  - helm-chart/README.md      → Helm-specific docs
+  - secrets/README.md         → Secret management
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ SUCCESS! All Kubernetes manifests have been created successfully.
+
+Location: /home/user/911-AI-Training/kubernetes/
+
+Next steps:
+1. Review the README.md for complete documentation
+2. Update image references with your registry
+3. Configure your domain name
+4. Create secrets with actual credentials
+5. Choose a deployment method and deploy!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

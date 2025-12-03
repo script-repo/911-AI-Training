@@ -1,0 +1,111 @@
+---
+# PostgreSQL StatefulSet
+# Primary database for storing training sessions, scenarios, and user data
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgresql
+  namespace: 911-training
+  labels:
+    app: 911-training-simulator
+    component: database
+spec:
+  serviceName: postgresql-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: 911-training-simulator
+      component: database
+  template:
+    metadata:
+      labels:
+        app: 911-training-simulator
+        component: database
+    spec:
+      containers:
+      - name: postgresql
+        image: postgres:15-alpine
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: postgresql
+          containerPort: 5432
+          protocol: TCP
+        env:
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: DB_NAME
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: database-secret
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: database-secret
+              key: POSTGRES_PASSWORD
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        # PostgreSQL performance tuning
+        # Adjust these based on your available resources
+        - name: POSTGRES_SHARED_BUFFERS
+          value: "256MB"
+        - name: POSTGRES_EFFECTIVE_CACHE_SIZE
+          value: "1GB"
+        - name: POSTGRES_MAINTENANCE_WORK_MEM
+          value: "64MB"
+        - name: POSTGRES_WORK_MEM
+          value: "4MB"
+        resources:
+          requests:
+            cpu: 1000m
+            memory: 2Gi
+          limits:
+            cpu: 4000m
+            memory: 8Gi
+        volumeMounts:
+        - name: postgresql-data
+          mountPath: /var/lib/postgresql/data
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - pg_isready -U postgres
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - pg_isready -U postgres
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+      # Security context for PostgreSQL
+      securityContext:
+        fsGroup: 999  # postgres group
+        runAsUser: 999  # postgres user
+  # VolumeClaimTemplate for persistent storage
+  volumeClaimTemplates:
+  - metadata:
+      name: postgresql-data
+      labels:
+        app: 911-training-simulator
+        component: database
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 100Gi
+      # Specify storageClassName if you have a specific storage class
+      # storageClassName: fast-ssd

@@ -1,0 +1,51 @@
+---
+# PostgreSQL PersistentVolumeClaim
+# Note: This is optional since the StatefulSet already has volumeClaimTemplates
+# Use this if you want to pre-create the PVC with specific settings
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgresql-data-pvc
+  namespace: 911-training
+  labels:
+    app: 911-training-simulator
+    component: database
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+  # Specify storageClassName if you have a specific storage class
+  # storageClassName: fast-ssd
+
+  # Optional: If you have a specific PV to bind to
+  # volumeName: postgresql-pv
+
+---
+# Optional: Example PersistentVolume for on-prem local storage
+# Uncomment and configure if you want to use local storage
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: postgresql-pv
+#   labels:
+#     app: 911-training-simulator
+#     component: database
+# spec:
+#   capacity:
+#     storage: 100Gi
+#   accessModes:
+#   - ReadWriteOnce
+#   persistentVolumeReclaimPolicy: Retain
+#   storageClassName: local-storage
+#   local:
+#     path: /mnt/data/postgresql
+#   nodeAffinity:
+#     required:
+#       nodeSelectorTerms:
+#       - matchExpressions:
+#         - key: kubernetes.io/hostname
+#           operator: In
+#           values:
+#           - your-node-name

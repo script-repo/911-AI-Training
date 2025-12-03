@@ -1,0 +1,20 @@
+---
+# Frontend Configuration ConfigMap
+# Contains frontend environment variables
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+  namespace: 911-training
+  labels:
+    app: 911-training-simulator
+    component: frontend
+data:
+  # API URLs - These will be accessed via Ingress
+  # In production, these should be your actual domain
+  VITE_API_URL: "http://your-domain.com/api"
+  VITE_WS_URL: "ws://your-domain.com/ws"
+
+  # Or for cluster-internal testing
+  # VITE_API_URL: "http://backend-service:8000"
+  # VITE_WS_URL: "ws://backend-service:8000"

@@ -1,0 +1,22 @@
+---
+# Redis Service
+# Exposes Redis cache within the cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+  namespace: 911-training
+  labels:
+    app: 911-training-simulator
+    component: redis
+spec:
+  type: ClusterIP
+  ports:
+  - name: redis
+    port: 6379
+    targetPort: 6379
+    protocol: TCP
+  selector:
+    app: 911-training-simulator
+    component: redis
+  sessionAffinity: None

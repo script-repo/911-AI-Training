@@ -1,0 +1,25 @@
+---
+# Backend Service
+# Exposes the FastAPI backend within the cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: 911-training
+  labels:
+    app: 911-training-simulator
+    component: backend
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 8000
+    protocol: TCP
+  selector:
+    app: 911-training-simulator
+    component: backend
+  sessionAffinity: ClientIP  # Sticky sessions for WebSocket connections
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 3600  # 1 hour session timeout

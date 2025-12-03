@@ -1,0 +1,84 @@
+---
+# Redis Deployment
+# In-memory cache for session management
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: 911-training
+  labels:
+    app: 911-training-simulator
+    component: redis
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate  # Single replica, so use Recreate strategy
+  selector:
+    matchLabels:
+      app: 911-training-simulator
+      component: redis
+  template:
+    metadata:
+      labels:
+        app: 911-training-simulator
+        component: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:7-alpine
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: redis
+          containerPort: 6379
+          protocol: TCP
+        args:
+        # Basic Redis configuration
+        # For production, consider adding:
+        # - --requirepass $(REDIS_PASSWORD)
+        # - --maxmemory 1gb
+        # - --maxmemory-policy allkeys-lru
+        - --appendonly yes
+        - --appendfsync everysec
+        env:
+        # Uncomment if using Redis authentication
+        # - name: REDIS_PASSWORD
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: redis-secret
+        #       key: REDIS_PASSWORD
+        resources:
+          requests:
+            cpu: 250m
+            memory: 512Mi
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+        livenessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+      volumes:
+      # Using emptyDir for development
+      # For production, use a PersistentVolumeClaim
+      - name: redis-data
+        emptyDir:
+          sizeLimit: 5Gi

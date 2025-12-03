@@ -1,0 +1,59 @@
+---
+# Backend Configuration ConfigMap
+# Contains non-sensitive backend configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: 911-training
+  labels:
+    app: 911-training-simulator
+    component: backend
+data:
+  # LLM Configuration
+  LLM_MODEL: "deepseek/deepseek-chat"
+  LLM_BASE_URL: "https://openrouter.ai/api/v1"
+  LLM_TEMPERATURE: "0.8"
+  LLM_MAX_TOKENS: "150"
+
+  # Service URLs (using Kubernetes service names)
+  COQUI_TTS_URL: "http://coqui-tts-service:5002"
+  REDIS_URL: "redis://redis-service:6379/0"
+  REDIS_HOST: "redis-service"
+  REDIS_PORT: "6379"
+  REDIS_DB: "0"
+
+  # Database Configuration (non-sensitive parts)
+  DB_HOST: "postgresql-service"
+  DB_PORT: "5432"
+  DB_NAME: "training_db"
+
+  # S3/MinIO Configuration (non-sensitive parts)
+  S3_ENDPOINT: "http://minio-service:9000"
+  S3_BUCKET_NAME: "911-training-recordings"
+  S3_REGION: "us-east-1"
+  S3_SECURE: "false"
+
+  # Application Configuration
+  BACKEND_HOST: "0.0.0.0"
+  BACKEND_PORT: "8000"
+  BACKEND_WORKERS: "4"
+  LOG_LEVEL: "INFO"
+  ENVIRONMENT: "production"
+
+  # Audio Processing
+  AUDIO_CODEC: "opus"
+  AUDIO_SAMPLE_RATE: "16000"
+  AUDIO_CHANNELS: "1"
+  AUDIO_BITRATE: "24000"
+  AUDIO_FRAME_DURATION_MS: "20"
+
+  # TTS Configuration
+  TTS_MODEL: "tts_models/en/ljspeech/tacotron2-DDC"
+  TTS_VOCODER: "vocoder_models/en/ljspeech/hifigan_v2"
+  TTS_SAMPLE_RATE: "22050"
+
+  # Session Configuration
+  SESSION_TTL: "3600"
+  MAX_CONCURRENT_CALLS: "50"
+  RATE_LIMIT_LLM_PER_MINUTE: "10"

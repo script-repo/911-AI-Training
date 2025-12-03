@@ -1,0 +1,82 @@
+backend/
+├── app/
+│   ├── __init__.py
+│   ├── main.py                          # FastAPI application entry point
+│   │
+│   ├── core/
+│   │   ├── __init__.py
+│   │   └── config.py                    # Pydantic Settings configuration
+│   │
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── database.py                  # SQLAlchemy ORM models
+│   │   └── schemas.py                   # Pydantic request/response schemas
+│   │
+│   ├── api/
+│   │   ├── __init__.py
+│   │   └── routes/
+│   │       ├── __init__.py
+│   │       ├── calls.py                 # REST API endpoints
+│   │       └── websocket.py             # WebSocket handler
+│   │
+│   ├── services/
+│   │   ├── __init__.py
+│   │   ├── llm_service.py              # OpenRouter LLM integration
+│   │   ├── tts_service.py              # Coqui TTS integration
+│   │   ├── nlp_service.py              # spaCy entity extraction
+│   │   ├── audio_service.py            # Audio encoding/decoding
+│   │   ├── storage_service.py          # S3/MinIO storage
+│   │   └── dialogue_manager.py         # Conversation state management
+│   │
+│   └── db/
+│       ├── __init__.py
+│       ├── base.py                      # Database session management
+│       └── utils.py                     # Database utilities
+│
+├── alembic/
+│   ├── env.py                           # Alembic environment configuration
+│   ├── script.py.mako                   # Migration template
+│   └── versions/
+│       ├── 001_initial_schema.py        # Initial database schema
+│       └── 002_seed_scenarios.py        # Seed training scenarios
+│
+├── alembic.ini                          # Alembic configuration
+├── requirements.txt                     # Python dependencies
+├── setup.py                            # Setup script
+├── run.py                              # Application runner
+├── QUICKSTART.md                       # Quick start guide
+├── IMPLEMENTATION_SUMMARY.txt          # Implementation summary
+└── STRUCTURE.txt                       # This file
+
+Created Files (New):
+==================
+✓ app/main.py
+✓ app/core/config.py
+✓ app/models/schemas.py
+✓ app/services/llm_service.py
+✓ app/services/tts_service.py
+✓ app/services/nlp_service.py
+✓ app/services/audio_service.py
+✓ app/services/storage_service.py
+✓ app/services/dialogue_manager.py
+✓ app/api/routes/websocket.py
+✓ app/api/routes/calls.py
+✓ setup.py
+✓ run.py
+✓ QUICKSTART.md
+✓ IMPLEMENTATION_SUMMARY.txt
+
+Existing Files (Preserved):
+==========================
+✓ app/models/database.py
+✓ app/db/__init__.py
+✓ app/db/base.py
+✓ app/db/utils.py
+✓ alembic.ini
+✓ alembic/env.py
+✓ alembic/versions/001_initial_schema.py
+✓ alembic/versions/002_seed_scenarios.py
+✓ requirements.txt
+
+Total Python Files: 24
+Total Lines of Code: ~3000+

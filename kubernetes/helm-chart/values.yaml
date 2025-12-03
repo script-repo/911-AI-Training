@@ -1,0 +1,235 @@
+# Default values for 911-training-simulator
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Global configuration
+global:
+  namespace: 911-training
+
+# Image configuration
+image:
+  registry: docker.io
+  pullPolicy: IfNotPresent
+  # pullSecrets:
+  #   - name: registry-secret
+
+# Frontend configuration
+frontend:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: your-registry/911-training-frontend
+    tag: latest
+  service:
+    type: ClusterIP
+    port: 80
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+  config:
+    viteApiUrl: "http://your-domain.com/api"
+    viteWsUrl: "ws://your-domain.com/ws"
+
+# Backend configuration
+backend:
+  enabled: true
+  replicaCount: 3
+  image:
+    repository: your-registry/911-training-backend
+    tag: latest
+  service:
+    type: ClusterIP
+    port: 8000
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 2000m
+      memory: 3Gi
+  config:
+    # LLM Configuration
+    llmModel: "deepseek/deepseek-chat"
+    llmBaseUrl: "https://openrouter.ai/api/v1"
+    llmTemperature: "0.8"
+    llmMaxTokens: "150"
+
+    # Application Configuration
+    backendHost: "0.0.0.0"
+    backendPort: "8000"
+    backendWorkers: "4"
+    logLevel: "INFO"
+    environment: "production"
+
+    # Audio Processing
+    audioCodec: "opus"
+    audioSampleRate: "16000"
+    audioChannels: "1"
+    audioBitrate: "24000"
+    audioFrameDurationMs: "20"
+
+    # Session Configuration
+    sessionTtl: "3600"
+    maxConcurrentCalls: "50"
+    rateLimitLlmPerMinute: "10"
+
+  # Secrets (create these separately)
+  secrets:
+    openrouterApiKey: ""  # Set via --set or in a separate values file
+
+  # Horizontal Pod Autoscaler
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+
+# Coqui TTS configuration
+coquiTts:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: ghcr.io/coqui-ai/tts
+    tag: latest
+  service:
+    type: ClusterIP
+    port: 5002
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 2Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
+  config:
+    model: "tts_models/en/ljspeech/tacotron2-DDC"
+    vocoder: "vocoder_models/en/ljspeech/hifigan_v2"
+    sampleRate: "22050"
+  storage:
+    cacheSize: 10Gi
+
+# PostgreSQL configuration
+postgresql:
+  enabled: true
+  image:
+    repository: postgres
+    tag: 15-alpine
+  service:
+    type: ClusterIP
+    port: 5432
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 2Gi
+    limits:
+      cpu: 4000m
+      memory: 8Gi
+  persistence:
+    enabled: true
+    size: 100Gi
+    # storageClass: fast-ssd
+  config:
+    database: training_db
+    username: postgres
+    # Set password via secret
+  secrets:
+    password: ""  # Set via --set or in a separate values file
+
+# Redis configuration
+redis:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: redis
+    tag: 7-alpine
+  service:
+    type: ClusterIP
+    port: 6379
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+  persistence:
+    enabled: false
+    size: 5Gi
+  secrets:
+    password: ""  # Optional, set via --set or in a separate values file
+
+# S3/MinIO configuration
+s3:
+  endpoint: "http://minio-service:9000"
+  bucketName: "911-training-recordings"
+  region: "us-east-1"
+  secure: false
+  secrets:
+    accessKey: ""  # Set via --set or in a separate values file
+    secretKey: ""  # Set via --set or in a separate values file
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/websocket-services: "backend-service"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/affinity-mode: "persistent"
+    nginx.ingress.kubernetes.io/session-cookie-name: "911-training-session"
+    nginx.ingress.kubernetes.io/session-cookie-max-age: "3600"
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: your-domain.com
+      paths:
+        - path: /api
+          pathType: Prefix
+          backend: backend
+        - path: /ws
+          pathType: Prefix
+          backend: backend
+        - path: /health
+          pathType: Prefix
+          backend: backend
+        - path: /ready
+          pathType: Prefix
+          backend: backend
+        - path: /
+          pathType: Prefix
+          backend: frontend
+  tls: []
+  #  - secretName: 911-training-tls
+  #    hosts:
+  #      - your-domain.com
+
+# Service Account
+serviceAccount:
+  create: true
+  annotations: {}
+  name: "911-training-sa"
+
+# Pod Security Policy
+podSecurityPolicy:
+  enabled: false
+
+# Network Policy
+networkPolicy:
+  enabled: false
+
+# RBAC
+rbac:
+  create: true
+
+# Affinity and tolerations
+affinity: {}
+tolerations: []
+nodeSelector: {}
