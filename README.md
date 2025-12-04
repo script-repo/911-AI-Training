@@ -2,6 +2,8 @@
 
 A web-based simulation platform for training 911 operators using AI-powered caller simulation.
 
+> **Branching note:** The repository's default branch is now `main`, and all work-in-progress changes from `work` have been merged into it.
+
 ## 🏗️ Architecture
 
 This application consists of:
