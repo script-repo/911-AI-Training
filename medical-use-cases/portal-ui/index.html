@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HealthAI Platform — Unified Portal</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+</head>
+<body>
+
+  <!-- ─── Sidebar ─────────────────────────────────────────────────── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <rect width="28" height="28" rx="7" fill="#3b82f6"/>
+          <path d="M14 5v18M5 14h18" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="14" cy="14" r="4" fill="#1d4ed8" stroke="#fff" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <span class="logo-text">HealthAI</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" data-view="dashboard">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 8a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H4a1 1 0 01-1-1v-4zm8-8a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V4zm0 8a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="#" class="nav-item" data-view="patient">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
+        <span>Patient Monitoring</span>
+      </a>
+      <a href="#" class="nav-item" data-view="medication">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.599-.8a1 1 0 01.894 1.79l-1.233.616 1.738 5.42a1 1 0 01-.285 1.05A3.989 3.989 0 0115 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.715-5.349L11 6.477V16h2a1 1 0 110 2H7a1 1 0 110-2h2V6.477L6.237 7.582l1.715 5.349a1 1 0 01-.285 1.05A3.989 3.989 0 015 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.738-5.42-1.233-.617a1 1 0 01.894-1.788l1.599.799L9 4.323V3a1 1 0 011-1z"/></svg>
+        <span>Medication Adherence</span>
+      </a>
+      <a href="#" class="nav-item" data-view="security">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+        <span>Security & Safety</span>
+      </a>
+      <a href="#" class="nav-item" data-view="vision">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>
+        <span>Vision Hub</span>
+      </a>
+      <a href="#" class="nav-item" data-view="models">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z"/><path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z"/><path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z"/></svg>
+        <span>Models</span>
+      </a>
+      <a href="#" class="nav-item" data-view="settings">
+        <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>
+        <span>Settings</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-chip">
+        <div class="user-avatar">AD</div>
+        <div class="user-info">
+          <span class="user-name">Admin</span>
+          <span class="user-role">portal-admin</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ─── Main ──────────────────────────────────────────────────────── -->
+  <main class="main" id="main">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor"><rect y="3" width="18" height="2" rx="1"/><rect y="8" width="18" height="2" rx="1"/><rect y="13" width="18" height="2" rx="1"/></svg>
+        </button>
+        <h1 class="page-title" id="pageTitle">Dashboard</h1>
+      </div>
+      <div class="topbar-right">
+        <div class="status-badge online">
+          <span class="status-dot"></span>
+          Cluster Online
+        </div>
+        <div class="alert-bell" id="alertBell" title="3 active alerts">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/></svg>
+          <span class="alert-count">3</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ─── Views ──────────────────────────────────────────────────── -->
+
+    <!-- DASHBOARD VIEW -->
+    <section class="view active" id="view-dashboard">
+
+      <!-- Stat cards -->
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="stat-label">Active Modules</div>
+          <div class="stat-value">4 <span class="stat-sub">/ 4</span></div>
+          <div class="stat-bar"><div class="stat-fill" style="width:100%"></div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">GPU Utilization</div>
+          <div class="stat-value">73<span class="stat-sub">%</span></div>
+          <div class="stat-bar"><div class="stat-fill warning" style="width:73%"></div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active Alerts</div>
+          <div class="stat-value alert-value">3</div>
+          <div class="stat-bar"><div class="stat-fill danger" style="width:30%"></div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Inference/min</div>
+          <div class="stat-value">1,284</div>
+          <div class="stat-bar"><div class="stat-fill" style="width:64%"></div></div>
+        </div>
+      </div>
+
+      <!-- Module status panels -->
+      <div class="panel-grid">
+
+        <!-- Patient Monitoring panel -->
+        <div class="panel" id="panel-pm">
+          <div class="panel-header" onclick="togglePanel('panel-pm')">
+            <div class="panel-title-group">
+              <span class="module-dot green"></span>
+              <span class="panel-title">Patient Monitoring</span>
+              <span class="module-tag">LLM</span>
+            </div>
+            <div class="panel-header-right">
+              <span class="panel-kpi">42 req/min</span>
+              <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="panel-meta-row">
+              <div class="meta-item"><span class="meta-label">Model</span><span class="meta-val">Gemma 7B</span></div>
+              <div class="meta-item"><span class="meta-label">Namespace</span><span class="meta-val">ai-patient</span></div>
+              <div class="meta-item"><span class="meta-label">GPU</span><span class="meta-val">1× A30</span></div>
+              <div class="meta-item"><span class="meta-label">Latency p99</span><span class="meta-val">310 ms</span></div>
+            </div>
+            <div class="mini-chart-wrap">
+              <canvas class="mini-chart" id="chart-pm" width="400" height="80"></canvas>
+              <div class="chart-label">Inference throughput — last 15 min</div>
+            </div>
+            <div class="panel-log">
+              <div class="log-line"><span class="log-time">14:02:31</span><span class="log-ok">[OK]</span> Patient #3841 — vitals summary generated</div>
+              <div class="log-line"><span class="log-time">14:02:18</span><span class="log-ok">[OK]</span> Patient #3802 — deterioration risk: LOW</div>
+              <div class="log-line"><span class="log-time">14:01:55</span><span class="log-warn">[WARN]</span> Patient #3817 — deterioration risk: MEDIUM — notified charge nurse</div>
+              <div class="log-line"><span class="log-time">14:01:44</span><span class="log-ok">[OK]</span> Patient #3799 — medication schedule confirmed</div>
+            </div>
+            <div class="panel-actions">
+              <button class="btn-secondary" onclick="showNotice('Opening model config...')">Configure Model</button>
+              <button class="btn-secondary" onclick="showNotice('Opening EHR integration settings...')">EHR Integration</button>
+              <button class="btn-primary" onclick="showNotice('Opening full log view...')">View Full Logs</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Medication Adherence panel -->
+        <div class="panel collapsed" id="panel-med">
+          <div class="panel-header" onclick="togglePanel('panel-med')">
+            <div class="panel-title-group">
+              <span class="module-dot green"></span>
+              <span class="panel-title">Medication Adherence</span>
+              <span class="module-tag">CV</span>
+            </div>
+            <div class="panel-header-right">
+              <span class="panel-kpi">98.2% adherence</span>
+              <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="panel-meta-row">
+              <div class="meta-item"><span class="meta-label">Model</span><span class="meta-val">YOLOv8-med</span></div>
+              <div class="meta-item"><span class="meta-label">Namespace</span><span class="meta-val">ai-medication</span></div>
+              <div class="meta-item"><span class="meta-label">Cameras</span><span class="meta-val">6 active</span></div>
+              <div class="meta-item"><span class="meta-label">FPS</span><span class="meta-val">24</span></div>
+            </div>
+            <div class="camera-grid">
+              <div class="camera-thumb">
+                <div class="camera-feed cam-1"></div>
+                <div class="camera-label">Ward 3A — Bed 12</div>
+                <span class="cam-status ok">CLEAR</span>
+              </div>
+              <div class="camera-thumb">
+                <div class="camera-feed cam-2"></div>
+                <div class="camera-label">Ward 3A — Bed 14</div>
+                <span class="cam-status ok">CLEAR</span>
+              </div>
+              <div class="camera-thumb">
+                <div class="camera-feed cam-3"></div>
+                <div class="camera-label">Ward 4B — Bed 07</div>
+                <span class="cam-status alert">REVIEW</span>
+              </div>
+              <div class="camera-thumb">
+                <div class="camera-feed cam-4"></div>
+                <div class="camera-label">Ward 4B — Bed 09</div>
+                <span class="cam-status ok">CLEAR</span>
+              </div>
+            </div>
+            <div class="adherence-bar-wrap">
+              <div class="adherence-label">Today's adherence rate</div>
+              <div class="adherence-track">
+                <div class="adherence-fill" style="width:98.2%"></div>
+              </div>
+              <div class="adherence-pct">98.2%</div>
+            </div>
+            <div class="panel-actions">
+              <button class="btn-secondary" onclick="showNotice('Opening camera management...')">Manage Cameras</button>
+              <button class="btn-secondary" onclick="showNotice('Opening threshold settings...')">Adjust Thresholds</button>
+              <button class="btn-primary" onclick="showNotice('Opening event log...')">Event Log</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Security & Safety panel -->
+        <div class="panel collapsed" id="panel-sec">
+          <div class="panel-header" onclick="togglePanel('panel-sec')">
+            <div class="panel-title-group">
+              <span class="module-dot amber"></span>
+              <span class="panel-title">Security & Safety</span>
+              <span class="module-tag">CV</span>
+            </div>
+            <div class="panel-header-right">
+              <span class="panel-kpi alert-kpi">2 active alerts</span>
+              <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="panel-meta-row">
+              <div class="meta-item"><span class="meta-label">Models</span><span class="meta-val">YOLOv8 + SlowFast</span></div>
+              <div class="meta-item"><span class="meta-label">Namespace</span><span class="meta-val">ai-security</span></div>
+              <div class="meta-item"><span class="meta-label">Cameras</span><span class="meta-val">8 active</span></div>
+              <div class="meta-item"><span class="meta-label">Alerts today</span><span class="meta-val">14</span></div>
+            </div>
+            <div class="alert-list">
+              <div class="alert-item high">
+                <div class="alert-icon">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                </div>
+                <div class="alert-info">
+                  <div class="alert-title">Group arrival detected — ER Entrance</div>
+                  <div class="alert-sub">6 persons · erratic movement · 14:01:22 — Security dispatched</div>
+                </div>
+                <button class="btn-ack" onclick="ackAlert(this)">Ack</button>
+              </div>
+              <div class="alert-item medium">
+                <div class="alert-icon">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                </div>
+                <div class="alert-info">
+                  <div class="alert-title">Group arrival detected — Main Entrance</div>
+                  <div class="alert-sub">4 persons · calm · 13:58:44 — Charge nurse notified</div>
+                </div>
+                <button class="btn-ack" onclick="ackAlert(this)">Ack</button>
+              </div>
+            </div>
+            <div class="panel-actions">
+              <button class="btn-secondary" onclick="showNotice('Opening camera grid...')">Camera Grid</button>
+              <button class="btn-secondary" onclick="showNotice('Opening alert rules editor...')">Alert Rules</button>
+              <button class="btn-primary" onclick="showNotice('Opening alert history...')">Alert History</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vision Hub panel -->
+        <div class="panel collapsed" id="panel-vision">
+          <div class="panel-header" onclick="togglePanel('panel-vision')">
+            <div class="panel-title-group">
+              <span class="module-dot green"></span>
+              <span class="panel-title">Vision Hub</span>
+              <span class="module-tag">CV · Tracking · Seg</span>
+            </div>
+            <div class="panel-header-right">
+              <span class="panel-kpi">12 sessions</span>
+              <svg class="chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="panel-meta-row">
+              <div class="meta-item"><span class="meta-label">Tracker</span><span class="meta-val">ByteTrack</span></div>
+              <div class="meta-item"><span class="meta-label">Identifier</span><span class="meta-val">CLIP + DINO</span></div>
+              <div class="meta-item"><span class="meta-label">Segmentor</span><span class="meta-val">SAM2</span></div>
+              <div class="meta-item"><span class="meta-label">GPU</span><span class="meta-val">2× A30</span></div>
+            </div>
+            <div class="capability-chips">
+              <div class="cap-chip active">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>
+                Object Tracking
+              </div>
+              <div class="cap-chip active">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/></svg>
+                Object Identification
+              </div>
+              <div class="cap-chip active">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path d="M5.5 16a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 16h-8z"/></svg>
+                Segmentation
+              </div>
+            </div>
+            <div class="api-explorer">
+              <div class="api-label">Quick API Test</div>
+              <div class="api-input-row">
+                <select class="api-select" id="apiEndpoint">
+                  <option value="/track">POST /track</option>
+                  <option value="/identify">POST /identify</option>
+                  <option value="/segment">POST /segment</option>
+                </select>
+                <button class="btn-primary" onclick="simulateApi()">Run</button>
+              </div>
+              <div class="api-response" id="apiResponse">
+                <span class="api-placeholder">Response will appear here...</span>
+              </div>
+            </div>
+            <div class="panel-actions">
+              <button class="btn-secondary" onclick="showNotice('Opening tracking sessions...')">Active Sessions</button>
+              <button class="btn-secondary" onclick="showNotice('Opening segmentation playground...')">Seg Playground</button>
+              <button class="btn-primary" onclick="showNotice('Opening API docs...')">API Docs</button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /.panel-grid -->
+
+      <!-- GPU Utilization section -->
+      <div class="section-title">Cluster Resources</div>
+      <div class="gpu-grid">
+        <div class="gpu-card">
+          <div class="gpu-name">worker-01 · A100 80GB</div>
+          <div class="gpu-bars">
+            <div class="gpu-bar-row"><span>GPU Util</span><div class="gpu-track"><div class="gpu-fill" style="width:68%"></div></div><span>68%</span></div>
+            <div class="gpu-bar-row"><span>VRAM</span><div class="gpu-track"><div class="gpu-fill warn" style="width:74%"></div></div><span>59/80 GB</span></div>
+            <div class="gpu-bar-row"><span>Temp</span><div class="gpu-track"><div class="gpu-fill ok" style="width:46%"></div></div><span>61°C</span></div>
+          </div>
+        </div>
+        <div class="gpu-card">
+          <div class="gpu-name">worker-02 · A100 80GB</div>
+          <div class="gpu-bars">
+            <div class="gpu-bar-row"><span>GPU Util</span><div class="gpu-track"><div class="gpu-fill" style="width:82%"></div></div><span>82%</span></div>
+            <div class="gpu-bar-row"><span>VRAM</span><div class="gpu-track"><div class="gpu-fill warn" style="width:88%"></div></div><span>70/80 GB</span></div>
+            <div class="gpu-bar-row"><span>Temp</span><div class="gpu-track"><div class="gpu-fill warn" style="width:56%"></div></div><span>72°C</span></div>
+          </div>
+        </div>
+        <div class="gpu-card">
+          <div class="gpu-name">worker-03 · A30 24GB</div>
+          <div class="gpu-bars">
+            <div class="gpu-bar-row"><span>GPU Util</span><div class="gpu-track"><div class="gpu-fill" style="width:45%"></div></div><span>45%</span></div>
+            <div class="gpu-bar-row"><span>VRAM</span><div class="gpu-track"><div class="gpu-fill ok" style="width:38%"></div></div><span>9/24 GB</span></div>
+            <div class="gpu-bar-row"><span>Temp</span><div class="gpu-track"><div class="gpu-fill ok" style="width:38%"></div></div><span>52°C</span></div>
+          </div>
+        </div>
+      </div>
+
+    </section><!-- /#view-dashboard -->
+
+    <!-- OTHER VIEWS (placeholder) -->
+    <section class="view" id="view-patient">
+      <div class="placeholder-view">
+        <div class="placeholder-icon">
+          <svg width="48" height="48" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
+        </div>
+        <div class="placeholder-title">Patient Monitoring</div>
+        <div class="placeholder-sub">Full patient monitoring view — model inference logs, EHR integration config, and clinical note summarization.</div>
+        <button class="btn-primary" onclick="switchView('dashboard')">Back to Dashboard</button>
+      </div>
+    </section>
+
+    <section class="view" id="view-medication">
+      <div class="placeholder-view">
+        <div class="placeholder-icon">
+          <svg width="48" height="48" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.599-.8a1 1 0 01.894 1.79l-1.233.616 1.738 5.42a1 1 0 01-.285 1.05A3.989 3.989 0 0115 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.715-5.349L11 6.477V16h2a1 1 0 110 2H7a1 1 0 110-2h2V6.477L6.237 7.582l1.715 5.349a1 1 0 01-.285 1.05A3.989 3.989 0 015 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.738-5.42-1.233-.617a1 1 0 01.894-1.788l1.599.799L9 4.323V3a1 1 0 011-1z"/></svg>
+        </div>
+        <div class="placeholder-title">Medication Adherence</div>
+        <div class="placeholder-sub">Live camera feeds, adherence event log, confidence threshold controls, and camera management.</div>
+        <button class="btn-primary" onclick="switchView('dashboard')">Back to Dashboard</button>
+      </div>
+    </section>
+
+    <section class="view" id="view-security">
+      <div class="placeholder-view">
+        <div class="placeholder-icon">
+          <svg width="48" height="48" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+        </div>
+        <div class="placeholder-title">Security & Safety</div>
+        <div class="placeholder-sub">Multi-camera grid view, alert history, and alert routing rule editor.</div>
+        <button class="btn-primary" onclick="switchView('dashboard')">Back to Dashboard</button>
+      </div>
+    </section>
+
+    <section class="view" id="view-vision">
+      <div class="placeholder-view">
+        <div class="placeholder-icon">
+          <svg width="48" height="48" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/></svg>
+        </div>
+        <div class="placeholder-title">Vision Hub</div>
+        <div class="placeholder-sub">API explorer, active tracking sessions, and segmentation playground.</div>
+        <button class="btn-primary" onclick="switchView('dashboard')">Back to Dashboard</button>
+      </div>
+    </section>
+
+    <section class="view" id="view-models">
+      <div class="placeholder-view">
+        <div class="placeholder-icon">
+          <svg width="48" height="48" viewBox="0 0 20 20" fill="currentColor"><path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z"/><path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z"/><path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z"/></svg>
+        </div>
+        <div class="placeholder-title">Model Library</div>
+        <div class="placeholder-sub">Upload, version, and deploy LLM and CV models to any module without CLI.</div>
+        <button class="btn-primary" onclick="switchView('dashboard')">Back to Dashboard</button>
+      </div>
+    </section>
+
+    <section class="view" id="view-settings">
+      <div class="placeholder-view">
+        <div class="placeholder-icon">
+          <svg width="48" height="48" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>
+        </div>
+        <div class="placeholder-title">Settings</div>
+        <div class="placeholder-sub">SSO/LDAP, TLS certificates, DNS, alert endpoints, GPU quotas, and RBAC configuration.</div>
+        <button class="btn-primary" onclick="switchView('dashboard')">Back to Dashboard</button>
+      </div>
+    </section>
+
+  </main><!-- /.main -->
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
