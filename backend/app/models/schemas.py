@@ -76,7 +76,7 @@ class CallSessionResponse(BaseModel):
     ended_at: Optional[datetime] = None
     duration_ms: Optional[int] = None
     status: str
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: Optional[Dict[str, Any]] = Field(default=None, validation_alias="session_metadata")
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -119,7 +119,7 @@ class ExtractedEntityResponse(BaseModel):
     confidence_score: float
     start_char: int
     end_char: int
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: Optional[Dict[str, Any]] = Field(default=None, validation_alias="entity_metadata")
 
     model_config = ConfigDict(from_attributes=True)
 

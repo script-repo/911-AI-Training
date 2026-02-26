@@ -154,7 +154,7 @@ async def end_call_session(
         duration_ms = int((ended_at - call_session.started_at).total_seconds() * 1000)
 
         # Update metadata with notes if provided
-        metadata = call_session.metadata or {}
+        metadata = call_session.session_metadata or {}
         if request.notes:
             metadata["notes"] = request.notes
         if request.operator_feedback:
@@ -166,7 +166,7 @@ async def end_call_session(
             status=CallSessionStatus.COMPLETED,
             ended_at=ended_at,
             duration_ms=duration_ms,
-            metadata=metadata
+            session_metadata=metadata
         )
         await db.execute(stmt)
         await db.commit()

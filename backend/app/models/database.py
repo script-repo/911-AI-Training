@@ -182,7 +182,8 @@ class CallSession(Base):
         default=CallSessionStatus.ACTIVE,
         comment="Current status of the call session"
     )
-    metadata: Mapped[Optional[dict]] = mapped_column(
+    session_metadata: Mapped[Optional[dict]] = mapped_column(
+        "metadata",
         JSONB,
         nullable=True,
         comment="Flexible storage for additional session data"
@@ -339,7 +340,8 @@ class ExtractedEntity(Base):
         nullable=False,
         comment="Ending character position in transcript text"
     )
-    metadata: Mapped[Optional[dict]] = mapped_column(
+    entity_metadata: Mapped[Optional[dict]] = mapped_column(
+        "metadata",
         JSONB,
         nullable=True,
         comment="Additional entity-specific data"

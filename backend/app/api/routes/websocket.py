@@ -456,7 +456,7 @@ async def extract_and_save_entities(
                 confidence_score=entity_data["confidence_score"],
                 start_char=entity_data["start_char"],
                 end_char=entity_data["end_char"],
-                metadata=entity_data.get("metadata", {})
+                entity_metadata=entity_data.get("metadata", {})
             )
             db.add(entity)
 
