@@ -13,12 +13,10 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-# Database URL from environment variable
-# Format: postgresql+asyncpg://user:password@host:port/database
-DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql+asyncpg://postgres:postgres@localhost:5432/911_training"
-)
+from app.core.config import settings
+
+# Database URL from settings (ensures consistency with config.py)
+DATABASE_URL = settings.async_database_url
 
 # Create async engine
 engine: AsyncEngine = create_async_engine(
@@ -56,7 +54,6 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
     async with AsyncSessionLocal() as session:
         try:
             yield session
-            await session.commit()
         except Exception:
             await session.rollback()
             raise

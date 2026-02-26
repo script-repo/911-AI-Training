@@ -17,6 +17,19 @@ class TTSService:
         self.model = settings.tts_model
         self.vocoder = settings.tts_vocoder
         self.sample_rate = settings.tts_sample_rate
+        self._client: httpx.AsyncClient | None = None
+
+    async def _get_client(self) -> httpx.AsyncClient:
+        """Lazily create and return a persistent HTTP client."""
+        if self._client is None or self._client.is_closed:
+            self._client = httpx.AsyncClient(timeout=30.0)
+        return self._client
+
+    async def close(self) -> None:
+        """Close the persistent HTTP client."""
+        if self._client is not None and not self._client.is_closed:
+            await self._client.close()
+            self._client = None
 
     async def synthesize_speech(
         self,
@@ -40,16 +53,16 @@ class TTSService:
             processed_text = self._apply_emotional_prosody(text, emotional_state)
 
             # Call Coqui TTS API
-            async with httpx.AsyncClient(timeout=30.0) as client:
-                response = await client.post(
-                    f"{self.tts_url}/api/tts",
-                    params={
-                        "text": processed_text,
-                        "model_name": self.model,
-                        "vocoder_name": self.vocoder,
-                    }
-                )
-                response.raise_for_status()
+            client = await self._get_client()
+            response = await client.post(
+                f"{self.tts_url}/api/tts",
+                params={
+                    "text": processed_text,
+                    "model_name": self.model,
+                    "vocoder_name": self.vocoder,
+                }
+            )
+            response.raise_for_status()
 
             # Encode audio data to base64
             audio_bytes = response.content
@@ -106,10 +119,10 @@ class TTSService:
             Dict containing available models and vocoders
         """
         try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
-                response = await client.get(f"{self.tts_url}/api/models")
-                response.raise_for_status()
-                return response.json()
+            client = await self._get_client()
+            response = await client.get(f"{self.tts_url}/api/models")
+            response.raise_for_status()
+            return response.json()
         except Exception as e:
             logger.error(f"Failed to fetch TTS models: {e}")
             return {"models": [], "vocoders": []}
@@ -122,9 +135,9 @@ class TTSService:
             bool: True if service is healthy
         """
         try:
-            async with httpx.AsyncClient(timeout=5.0) as client:
-                response = await client.get(f"{self.tts_url}/api/models")
-                return response.status_code == 200
+            client = await self._get_client()
+            response = await client.get(f"{self.tts_url}/api/models")
+            return response.status_code == 200
         except Exception as e:
             logger.error(f"TTS health check failed: {e}")
             return False

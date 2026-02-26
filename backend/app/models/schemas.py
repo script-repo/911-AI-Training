@@ -151,7 +151,7 @@ class TrainingScenarioCreate(BaseModel):
     description: str = Field(..., min_length=1)
     caller_profile: CallerProfile
     scenario_script: ScenarioScript
-    difficulty_level: Literal["beginner", "intermediate", "advanced", "expert"] = "beginner"
+    difficulty_level: Literal["easy", "medium", "hard"] = "easy"
 
 
 class TrainingScenarioResponse(BaseModel):

@@ -2,18 +2,19 @@
 
 import logging
 from contextlib import asynccontextmanager
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.core.config import settings
 from app.models import schemas
-from app.api.routes import calls, websocket
+from app.api.routes import auth, calls, supervisor, websocket
 from app.db import init_db, engine
 from app.services.dialogue_manager import dialogue_manager
 from app.services.storage_service import storage_service
 from app.services.tts_service import tts_service
+from app.services.llm_service import llm_service
 
 # Configure logging
 logging.basicConfig(
@@ -40,6 +41,10 @@ async def lifespan(app: FastAPI):
         logger.info("Initializing dialogue manager...")
         await dialogue_manager.initialize()
 
+        # Ensure S3 bucket exists
+        logger.info("Ensuring S3 storage is ready...")
+        await storage_service.ensure_ready()
+
         logger.info("Application startup complete!")
 
     except Exception as e:
@@ -54,6 +59,10 @@ async def lifespan(app: FastAPI):
     try:
         # Close dialogue manager (Redis)
         await dialogue_manager.close()
+
+        # Close HTTP clients
+        await llm_service.close()
+        await tts_service.close()
 
         # Close database connections
         await engine.dispose()
@@ -83,7 +92,9 @@ app.add_middleware(
 
 
 # Include routers
+app.include_router(auth.router)
 app.include_router(calls.router)
+app.include_router(supervisor.router)
 app.include_router(websocket.router)
 
 
@@ -97,7 +108,7 @@ async def health_check():
     """
     return schemas.HealthCheckResponse(
         status="healthy",
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.now(timezone.utc),
         version="1.0.0"
     )
 
@@ -144,7 +155,7 @@ async def readiness_check():
         redis=redis_ready,
         s3=s3_ready,
         tts=tts_ready,
-        timestamp=datetime.utcnow()
+        timestamp=datetime.now(timezone.utc)
     )
 
 

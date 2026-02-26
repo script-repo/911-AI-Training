@@ -86,40 +86,41 @@ class ApiService {
   async getScenarios(): Promise<ApiResponse<Scenario[]>> {
     return this.request<Scenario[]>({
       method: 'GET',
-      url: '/scenarios',
+      url: '/v1/scenarios',
     });
   }
 
   async getScenario(id: string): Promise<ApiResponse<Scenario>> {
     return this.request<Scenario>({
       method: 'GET',
-      url: `/scenarios/${id}`,
+      url: `/v1/scenarios/${id}`,
     });
   }
 
   // Call endpoints
-  async startCall(scenarioId?: string): Promise<ApiResponse<{ sessionId: string; callId: string }>> {
+  async startCall(scenarioId?: string, operatorId?: string): Promise<ApiResponse<{ sessionId: string; callId: string }>> {
     return this.request({
       method: 'POST',
-      url: '/calls/start',
-      data: { scenarioId },
+      url: '/v1/calls/start',
+      data: { scenario_id: scenarioId, operator_id: operatorId || 'anonymous' },
     });
   }
 
   async endCall(callId: string): Promise<ApiResponse<void>> {
     return this.request({
       method: 'POST',
-      url: `/calls/${callId}/end`,
+      url: `/v1/calls/${callId}/end`,
     });
   }
 
+  // TODO: Backend endpoint not yet implemented
   async getCallHistory(
     page = 1,
     pageSize = 20
   ): Promise<ApiResponse<PaginatedResponse<CallHistoryItem>>> {
     return this.request<PaginatedResponse<CallHistoryItem>>({
       method: 'GET',
-      url: '/calls/history',
+      url: '/v1/calls/history',
       params: { page, pageSize },
     });
   }
@@ -127,46 +128,52 @@ class ApiService {
   async getCallDetails(callId: string): Promise<ApiResponse<CallHistoryItem>> {
     return this.request<CallHistoryItem>({
       method: 'GET',
-      url: `/calls/${callId}`,
+      url: `/v1/calls/${callId}`,
     });
   }
 
+  // TODO: Backend endpoint not yet implemented
   async getCallMetrics(callId: string): Promise<ApiResponse<CallMetrics>> {
     return this.request<CallMetrics>({
       method: 'GET',
-      url: `/calls/${callId}/metrics`,
+      url: `/v1/calls/${callId}/metrics`,
     });
   }
 
   async getCallTranscript(callId: string): Promise<ApiResponse<any>> {
     return this.request({
       method: 'GET',
-      url: `/calls/${callId}/transcript`,
+      url: `/v1/calls/${callId}/transcript`,
     });
   }
 
-  // User endpoints
+  // TODO: Backend endpoint not yet implemented
   async getCurrentUser(): Promise<ApiResponse<User>> {
     return this.request<User>({
       method: 'GET',
-      url: '/users/me',
+      url: '/v1/users/me',
     });
   }
 
+  // TODO: Backend endpoint not yet implemented
   async updateUser(userId: string, data: Partial<User>): Promise<ApiResponse<User>> {
     return this.request<User>({
       method: 'PATCH',
-      url: `/users/${userId}`,
+      url: `/v1/users/${userId}`,
       data,
     });
   }
 
   // Health check
+  // Note: Health endpoint is at root /health, not under /api/v1.
+  // Using a direct axios call since this.client has baseURL '/api'.
   async healthCheck(): Promise<ApiResponse<{ status: string }>> {
-    return this.request({
-      method: 'GET',
-      url: '/health',
-    });
+    try {
+      const response = await axios.get('/health');
+      return { success: true, data: response.data };
+    } catch (error) {
+      return this.handleError(error);
+    }
   }
 }
 

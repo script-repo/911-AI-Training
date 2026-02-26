@@ -148,11 +148,12 @@ class CallSession(Base):
         default=uuid.uuid4,
         comment="Unique identifier for the call session"
     )
-    operator_id: Mapped[str] = mapped_column(
-        String(100),
-        nullable=False,
+    operator_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
         index=True,
-        comment="Identifier for the operator trainee"
+        comment="Reference to the operator trainee"
     )
     scenario_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
@@ -203,6 +204,7 @@ class CallSession(Base):
     )
 
     # Relationships
+    operator: Mapped[Optional["User"]] = relationship(back_populates="call_sessions")
     scenario: Mapped["TrainingScenario"] = relationship(back_populates="call_sessions")
     transcripts: Mapped[list["CallTranscript"]] = relationship(
         back_populates="session",
@@ -212,6 +214,15 @@ class CallSession(Base):
     performance_metrics: Mapped[list["PerformanceMetrics"]] = relationship(
         back_populates="session",
         cascade="all, delete-orphan"
+    )
+    protocol_events: Mapped[list["ProtocolEvent"]] = relationship(
+        back_populates="session",
+        cascade="all, delete-orphan"
+    )
+    score: Mapped[Optional["CallScore"]] = relationship(
+        back_populates="session",
+        cascade="all, delete-orphan",
+        uselist=False
     )
 
     def __repr__(self) -> str:

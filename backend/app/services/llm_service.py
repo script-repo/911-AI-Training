@@ -17,6 +17,19 @@ class LLMService:
         self.model = settings.llm_model
         self.temperature = settings.llm_temperature
         self.max_tokens = settings.llm_max_tokens
+        self._client: httpx.AsyncClient | None = None
+
+    async def _get_client(self) -> httpx.AsyncClient:
+        """Lazily create and return a persistent HTTP client."""
+        if self._client is None or self._client.is_closed:
+            self._client = httpx.AsyncClient(timeout=30.0)
+        return self._client
+
+    async def close(self) -> None:
+        """Close the persistent HTTP client."""
+        if self._client is not None and not self._client.is_closed:
+            await self._client.close()
+            self._client = None
 
     async def generate_caller_response(
         self,
@@ -50,22 +63,22 @@ class LLMService:
             messages.extend(conversation_history)
 
             # Call OpenRouter API
-            async with httpx.AsyncClient(timeout=30.0) as client:
-                response = await client.post(
-                    f"{self.base_url}/chat/completions",
-                    headers={
-                        "Authorization": f"Bearer {self.api_key}",
-                        "Content-Type": "application/json",
-                    },
-                    json={
-                        "model": self.model,
-                        "messages": messages,
-                        "temperature": self.temperature,
-                        "max_tokens": self.max_tokens,
-                    }
-                )
-                response.raise_for_status()
-                result = response.json()
+            client = await self._get_client()
+            response = await client.post(
+                f"{self.base_url}/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {self.api_key}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "model": self.model,
+                    "messages": messages,
+                    "temperature": self.temperature,
+                    "max_tokens": self.max_tokens,
+                }
+            )
+            response.raise_for_status()
+            result = response.json()
 
             # Extract response
             response_text = result["choices"][0]["message"]["content"]
@@ -125,7 +138,25 @@ Instructions:
 6. Show stress, fear, or confusion appropriate to the situation
 7. Do not volunteer all information at once - make the operator work for it
 
+Key Information You Know (reveal gradually):
+{self._format_key_entities(scenario_context)}
+
+Expected Conversation Flow:
+{self._format_expected_flow(scenario_context)}
+
 Respond only as the caller would speak on the phone. Do not include stage directions or explanations."""
+
+    def _format_key_entities(self, scenario_context: Dict[str, Any]) -> str:
+        entities = scenario_context.get("key_entities", [])
+        if not entities:
+            return "No specific entities defined."
+        return "\n".join(f"- [{e.get('type', 'INFO')}] {e.get('value', '')}" for e in entities)
+
+    def _format_expected_flow(self, scenario_context: Dict[str, Any]) -> str:
+        flow = scenario_context.get("expected_flow", [])
+        if not flow:
+            return "Respond naturally to the operator's questions."
+        return "\n".join(f"{i+1}. {step}" for i, step in enumerate(flow))
 
     def _analyze_emotional_state(
         self,

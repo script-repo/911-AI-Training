@@ -4,7 +4,7 @@ import { useCallStore } from '@/stores/callStore';
 import { useCallSession } from '@/hooks/useCallSession';
 import { CallStatus } from '@/types';
 import CallControls from '@/components/CallTakerDashboard/CallControls';
-import CallStatus from '@/components/CallTakerDashboard/CallStatus';
+import CallStatusDisplay from '@/components/CallTakerDashboard/CallStatus';
 import EmergencyActions from '@/components/CallTakerDashboard/EmergencyActions';
 import AudioVisualizer from '@/components/AudioProcessor/AudioVisualizer';
 import TranscriptView from '@/components/LiveTranscript/TranscriptView';
@@ -46,7 +46,7 @@ const Dashboard = () => {
       {/* Top Section - Call Status and Controls */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         <div className="lg:col-span-2">
-          <CallStatus />
+          <CallStatusDisplay />
         </div>
         <div>
           <CallControls onEndCall={handleEndCall} />

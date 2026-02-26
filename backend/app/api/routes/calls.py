@@ -6,7 +6,7 @@ from uuid import UUID
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update
+from sqlalchemy import select, update, func
 from sqlalchemy.orm import selectinload
 
 from app.db import get_db
@@ -83,7 +83,7 @@ async def start_call_session(
         logger.error(f"Failed to start call session: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to start call session: {str(e)}"
+            detail="Internal server error"
         )
 
 
@@ -115,7 +115,7 @@ async def get_call_session(
         logger.error(f"Failed to get call session: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get call session: {str(e)}"
+            detail="Internal server error"
         )
 
 
@@ -187,7 +187,7 @@ async def end_call_session(
         logger.error(f"Failed to end call session: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to end call session: {str(e)}"
+            detail="Internal server error"
         )
 
 
@@ -232,7 +232,7 @@ async def get_call_transcript(
         logger.error(f"Failed to get call transcript: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get call transcript: {str(e)}"
+            detail="Internal server error"
         )
 
 
@@ -269,13 +269,13 @@ async def list_scenarios(
         scenarios = result.scalars().all()
 
         # Get total count
-        count_query = select(TrainingScenario)
+        count_query = select(func.count()).select_from(TrainingScenario)
         if difficulty:
             count_query = count_query.where(
                 TrainingScenario.difficulty_level == DifficultyLevel(difficulty.lower())
             )
         count_result = await db.execute(count_query)
-        total_count = len(count_result.scalars().all())
+        total_count = count_result.scalar() or 0
 
         return schemas.TrainingScenarioListResponse(
             scenarios=scenarios,
@@ -288,7 +288,7 @@ async def list_scenarios(
         logger.error(f"Failed to list scenarios: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to list scenarios: {str(e)}"
+            detail="Internal server error"
         )
 
 
@@ -338,7 +338,7 @@ async def create_scenario(
         logger.error(f"Failed to create scenario: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to create scenario: {str(e)}"
+            detail="Internal server error"
         )
 
 
@@ -370,5 +370,5 @@ async def get_scenario(
         logger.error(f"Failed to get scenario: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get scenario: {str(e)}"
+            detail="Internal server error"
         )

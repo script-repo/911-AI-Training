@@ -1,5 +1,6 @@
 """NLP service for entity extraction using spaCy"""
 
+import asyncio
 import logging
 from typing import List, Dict, Any
 import time
@@ -58,7 +59,7 @@ class NLPService:
 
         try:
             nlp = get_nlp()
-            doc = nlp(text)
+            doc = await asyncio.to_thread(nlp, text)
 
             entities = []
 

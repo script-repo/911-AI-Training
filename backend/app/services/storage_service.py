@@ -1,8 +1,9 @@
 """S3/MinIO storage service for audio recordings"""
 
+import asyncio
 import logging
 from typing import Optional, BinaryIO
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 import uuid
 import boto3
 from botocore.exceptions import ClientError, EndpointConnectionError
@@ -24,12 +25,18 @@ class StorageService:
             use_ssl=settings.s3_secure
         )
         self.bucket_name = settings.s3_bucket_name
-        self._ensure_bucket_exists()
 
-    def _ensure_bucket_exists(self) -> None:
+    async def ensure_ready(self) -> None:
+        """Ensure the storage service is ready (bucket exists). Call from lifespan handler."""
+        await self._ensure_bucket_exists()
+
+    async def _ensure_bucket_exists(self) -> None:
         """Ensure the S3 bucket exists, create if not"""
         try:
-            self.s3_client.head_bucket(Bucket=self.bucket_name)
+            await asyncio.to_thread(
+                self.s3_client.head_bucket,
+                Bucket=self.bucket_name
+            )
             logger.info(f"S3 bucket '{self.bucket_name}' exists")
         except EndpointConnectionError as e:
             logger.warning(f"S3/MinIO not available at {settings.s3_endpoint}: {e}. Storage operations will fail until MinIO is running.")
@@ -38,7 +45,10 @@ class StorageService:
             if error_code == '404':
                 logger.info(f"Creating S3 bucket '{self.bucket_name}'")
                 try:
-                    self.s3_client.create_bucket(Bucket=self.bucket_name)
+                    await asyncio.to_thread(
+                        self.s3_client.create_bucket,
+                        Bucket=self.bucket_name
+                    )
                     logger.info(f"S3 bucket '{self.bucket_name}' created successfully")
                 except Exception as create_error:
                     logger.error(f"Failed to create bucket: {create_error}")
@@ -66,18 +76,19 @@ class StorageService:
         """
         try:
             if filename is None:
-                timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+                timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
                 filename = f"recordings/{session_id}/{timestamp}.wav"
 
             # Upload to S3
-            self.s3_client.put_object(
+            await asyncio.to_thread(
+                self.s3_client.put_object,
                 Bucket=self.bucket_name,
                 Key=filename,
                 Body=audio_data,
                 ContentType=content_type,
                 Metadata={
                     'session_id': str(session_id),
-                    'uploaded_at': datetime.utcnow().isoformat()
+                    'uploaded_at': datetime.now(timezone.utc).isoformat()
                 }
             )
 
@@ -111,7 +122,8 @@ class StorageService:
         try:
             filename = f"transcripts/{session_id}/{chunk_id}.json"
 
-            self.s3_client.put_object(
+            await asyncio.to_thread(
+                self.s3_client.put_object,
                 Bucket=self.bucket_name,
                 Key=filename,
                 Body=transcript_data,
@@ -139,7 +151,8 @@ class StorageService:
             File bytes
         """
         try:
-            response = self.s3_client.get_object(
+            response = await asyncio.to_thread(
+                self.s3_client.get_object,
                 Bucket=self.bucket_name,
                 Key=file_key
             )
@@ -167,7 +180,8 @@ class StorageService:
             bool: True if successful
         """
         try:
-            self.s3_client.delete_object(
+            await asyncio.to_thread(
+                self.s3_client.delete_object,
                 Bucket=self.bucket_name,
                 Key=file_key
             )
@@ -194,7 +208,8 @@ class StorageService:
             Presigned URL
         """
         try:
-            url = self.s3_client.generate_presigned_url(
+            url = await asyncio.to_thread(
+                self.s3_client.generate_presigned_url,
                 'get_object',
                 Params={
                     'Bucket': self.bucket_name,
@@ -223,7 +238,8 @@ class StorageService:
         """
         try:
             prefix = f"recordings/{session_id}/"
-            response = self.s3_client.list_objects_v2(
+            response = await asyncio.to_thread(
+                self.s3_client.list_objects_v2,
                 Bucket=self.bucket_name,
                 Prefix=prefix
             )
@@ -245,7 +261,10 @@ class StorageService:
             bool: True if service is healthy
         """
         try:
-            self.s3_client.head_bucket(Bucket=self.bucket_name)
+            await asyncio.to_thread(
+                self.s3_client.head_bucket,
+                Bucket=self.bucket_name
+            )
             return True
         except Exception as e:
             logger.error(f"S3 health check failed: {e}")

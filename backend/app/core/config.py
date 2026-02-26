@@ -64,6 +64,9 @@ class Settings(BaseSettings):
     max_concurrent_calls: int = Field(default=50, alias="MAX_CONCURRENT_CALLS")
     rate_limit_llm_per_minute: int = Field(default=10, alias="RATE_LIMIT_LLM_PER_MINUTE")
 
+    # Security / JWT
+    jwt_secret_key: str = Field(default="CHANGE-ME-IN-PRODUCTION", alias="JWT_SECRET_KEY")
+
     # CORS Configuration
     cors_origins: str = Field(default="http://localhost:3000,http://localhost:8000", alias="CORS_ORIGINS")
 
@@ -75,6 +78,8 @@ class Settings(BaseSettings):
     @property
     def async_database_url(self) -> str:
         """Get async database URL for SQLAlchemy"""
+        if "+asyncpg" in self.database_url:
+            return self.database_url
         return self.database_url.replace("postgresql://", "postgresql+asyncpg://")
 
     model_config = SettingsConfigDict(

@@ -12,10 +12,7 @@ export default defineConfig({
   server: {
     port: 3000,
     host: true,
-    allowedHosts: [
-      '5bad0d079c8bbdb484d6-pod-d6fhx5hnwneopaz33eowrngvna-3000.us5p.cursorvm.com',
-      '.cursorvm.com',
-    ],
+    allowedHosts: true,
     proxy: {
       '/api': {
         target: process.env.VITE_API_URL || 'http://localhost:8000',

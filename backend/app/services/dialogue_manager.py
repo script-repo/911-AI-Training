@@ -99,13 +99,42 @@ class DialogueManager:
             logger.error(f"Failed to get session context: {e}")
             return None
 
+    async def _save_session_context(
+        self,
+        session_id: str,
+        context: Dict[str, Any]
+    ) -> None:
+        """
+        Save a full session context directly to Redis without fetching first.
+
+        Use this when the caller already holds the complete, modified context.
+
+        Args:
+            session_id: Call session ID
+            context: Full context dictionary to save
+        """
+        try:
+            key = f"session:{session_id}:context"
+            await self.redis_client.set(
+                key,
+                json.dumps(context),
+                ex=settings.session_ttl
+            )
+            logger.debug(f"Session context saved: {session_id}")
+        except Exception as e:
+            logger.error(f"Failed to save session context: {e}")
+            raise
+
     async def update_session_context(
         self,
         session_id: str,
         updates: Dict[str, Any]
     ) -> None:
         """
-        Update session context with new information.
+        Update session context with partial updates (read-modify-write).
+
+        Use this for simple key-value updates where the caller does not
+        already hold the full context.
 
         Args:
             session_id: Call session ID
@@ -119,12 +148,7 @@ class DialogueManager:
             # Update context
             context.update(updates)
 
-            key = f"session:{session_id}:context"
-            await self.redis_client.set(
-                key,
-                json.dumps(context),
-                ex=settings.session_ttl
-            )
+            await self._save_session_context(session_id, context)
 
             logger.debug(f"Session context updated: {session_id}")
 
@@ -164,7 +188,7 @@ class DialogueManager:
             context["conversation_history"].append(turn)
             context["turn_count"] = len(context["conversation_history"])
 
-            await self.update_session_context(session_id, context)
+            await self._save_session_context(session_id, context)
 
         except Exception as e:
             logger.error(f"Failed to add conversation turn: {e}")
@@ -249,7 +273,7 @@ class DialogueManager:
             if entity_value not in context["extracted_entities"][entity_type]:
                 context["extracted_entities"][entity_type].append(entity_value)
 
-            await self.update_session_context(session_id, context)
+            await self._save_session_context(session_id, context)
 
         except Exception as e:
             logger.error(f"Failed to add extracted entity: {e}")

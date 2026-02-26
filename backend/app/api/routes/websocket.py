@@ -135,9 +135,9 @@ async def websocket_endpoint(
                 await websocket.send_json({
                     "type": "error",
                     "error_code": "INTERNAL_ERROR",
-                    "error_message": str(e)
+                    "error_message": "Internal server error"
                 })
-            except:
+            except Exception:
                 pass
             manager.disconnect(session_id)
 
@@ -270,6 +270,16 @@ async def handle_transcript_message(
 ):
     """Handle transcript message (operator speech)"""
     try:
+        # Fetch fresh context from Redis
+        context = await dialogue_manager.get_session_context(session_id)
+        if not context:
+            await websocket.send_json({
+                "type": "error",
+                "error_code": "CONTEXT_NOT_FOUND",
+                "error_message": "Session context not found"
+            })
+            return
+
         text = message.get("text", "")
         timestamp_ms = message.get("timestamp_ms", 0)
 
@@ -377,7 +387,7 @@ async def handle_transcript_message(
         await websocket.send_json({
             "type": "error",
             "error_code": "PROCESSING_ERROR",
-            "error_message": str(e)
+            "error_message": "Failed to process message"
         })
 
 
