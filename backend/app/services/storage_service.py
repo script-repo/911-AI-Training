@@ -5,7 +5,7 @@ from typing import Optional, BinaryIO
 from datetime import datetime, timedelta
 import uuid
 import boto3
-from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError, EndpointConnectionError
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -31,6 +31,8 @@ class StorageService:
         try:
             self.s3_client.head_bucket(Bucket=self.bucket_name)
             logger.info(f"S3 bucket '{self.bucket_name}' exists")
+        except EndpointConnectionError as e:
+            logger.warning(f"S3/MinIO not available at {settings.s3_endpoint}: {e}. Storage operations will fail until MinIO is running.")
         except ClientError as e:
             error_code = e.response['Error']['Code']
             if error_code == '404':
